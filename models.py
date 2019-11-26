@@ -1,5 +1,7 @@
 import numpy as np
+import scipy.linalg as la
 from collections import defaultdict
+
 
 # TODO: You can import anything from numpy or scipy here!
 
@@ -30,6 +32,7 @@ class Model(object):
         """
         raise NotImplementedError()
 
+
 class PCA(Model):
 
     def __init__(self, X, target_dim):
@@ -39,8 +42,24 @@ class PCA(Model):
         self.W = None
 
     def fit(self, X):
-        # TODO: Implement!
-        raise NotImplementedError()
+
+        var_x = np.var(X, axis=0)
+        mean_x = np.mean(X, axis=0)
+
+        std_X = np.zeros(X.shape)
+        for idx, val in enumerate(var_x):
+            if val == 0:  # if variance is zero, only subtract mean
+                val = 1
+            std_X[:, idx] = (X[:, idx] - mean_x[idx]) / val
+
+        cov = np.cov(std_X.T)
+        A, Q = la.eig(cov)
+        sorted_idx = np.flip(np.argsort(A))[0:self.target_dim]
+
+        self.W = Q[:, sorted_idx]
+
+        return X @ self.W
+
 
 class LLE(Model):
 
@@ -55,6 +74,7 @@ class LLE(Model):
         # TODO: Implement!
         raise NotImplementedError()
 
+
 class KNN(Model):
 
     def __init__(self, k):
@@ -67,4 +87,6 @@ class KNN(Model):
         self.labels = y
 
     def predict(self, X):
-        # TODO: Implement!
+        distance = [[np.linalg.norm(i - j) for i in self.data] for j in X]
+
+        return [self.labels[i] for i in np.argmin(distance, axis=1)]
