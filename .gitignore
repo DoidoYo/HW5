@@ -1,0 +1,7 @@
+
+data/glove.6B.100d.txt
+data/labels-mnist-dev.npy
+data/labels-mnist-train.npy
+data/mnist-dev.npy
+data/mnist-test.npy
+data/mnist-train.npy
