@@ -91,15 +91,15 @@ class LLE(Model):
         self.W = np.zeros((self.num_x,self.num_x))
 
         d = 0
-        for i in std_X:
+        for id, i in enumerate(std_X):
             Z = np.zeros((self.x_dim, self.k))
             for k in range(self.k):
-                Z[k] = std_X[neighs[i][k]] - i
+                Z[:, k] = std_X[neighs[id][k]] - i
             C = Z.T @ Z
             e = 1e-3 * np.trace(C)
             C = C + e * np.eye(C.shape[0])
             w = la.inv(C)
-            self.W[i] = w / np.sum(w)
+            self.W[id] = w / np.sum(w)
             print(d)
             d += 1
 
