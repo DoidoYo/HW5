@@ -5,6 +5,19 @@ from collections import defaultdict
 
 # TODO: You can import anything from numpy or scipy here!
 
+def normalize_data(X):
+    var_x = np.var(X, axis=0)
+    mean_x = np.mean(X, axis=0)
+
+    std_X = np.zeros(X.shape)
+    for idx, val in enumerate(var_x):
+        if val == 0:  # if variance is zero, only subtract mean
+            val = 1
+        std_X[:, idx] = (X[:, idx] - mean_x[idx]) / val
+
+    return std_X
+
+
 class Model(object):
 
     def __init__(self):
@@ -43,15 +56,7 @@ class PCA(Model):
 
     def fit(self, X):
 
-        var_x = np.var(X, axis=0)
-        mean_x = np.mean(X, axis=0)
-
-        std_X = np.zeros(X.shape)
-        for idx, val in enumerate(var_x):
-            if val == 0:  # if variance is zero, only subtract mean
-                val = 1
-            std_X[:, idx] = (X[:, idx] - mean_x[idx]) / val
-
+        std_X = normalize_data(X)
         cov = np.cov(std_X.T)
         A, Q = la.eig(cov)
         sorted_idx = np.flip(np.argsort(A))[0:self.target_dim]
@@ -71,7 +76,34 @@ class LLE(Model):
         self.k = lle_k
 
     def fit(self, X):
-        # TODO: Implement!
+        std_X = normalize_data(X)
+
+        # get neighbors 1
+        neighs = []
+        for id, i in enumerate(std_X):
+            distances = []
+            for j in std_X:
+                distances.append(la.norm(i-j))
+            neighs.append(np.argsort(distances)[1:self.k+1])
+
+
+        # 2. Solve for reconstruction weights
+        self.W = np.zeros((self.num_x,self.num_x))
+
+        d = 0
+        for i in std_X:
+            Z = np.zeros((self.x_dim, self.k))
+            for k in range(self.k):
+                Z[k] = std_X[neighs[i][k]] - i
+            C = Z.T @ Z
+            e = 1e-3 * np.trace(C)
+            C = C + e * np.eye(C.shape[0])
+            w = la.inv(C)
+            self.W[i] = w / np.sum(w)
+            print(d)
+            d += 1
+
+        # print(test.shape)
         raise NotImplementedError()
 
 
