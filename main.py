@@ -40,7 +40,8 @@ def main():
 
     if args.dr_algorithm is not None:
         num_train = X.shape[0]
-        concat_data = np.concatenate((X[0:1000], test_X))
+        concat_data = np.concatenate((X, test_X))
+        # concat_data = np.concatenate((X[0:1000], test_X))
 
         start = time.time()
         if args.dr_algorithm == 'pca':
