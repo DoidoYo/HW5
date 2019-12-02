@@ -7,7 +7,7 @@ import statistics
 from collections import defaultdict
 
 
-# TODO: You can import anything from numpy or scipy here!
+# TODO: You can import anything from numpy or scipy here! nice
 
 def normalize_data(X):
     var_x = np.std(X, axis=0)
