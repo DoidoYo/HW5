@@ -20,7 +20,6 @@ def normalize_data(X):
         std_X[:, idx] = (X[:, idx] - mean_x[idx]) / val
 
     return std_X
-#test
 
 class Model(object):
 
